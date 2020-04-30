@@ -19,6 +19,8 @@ package com.google.samples.propertyanimation
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -76,36 +78,79 @@ class MainActivity : AppCompatActivity() {
     private fun rotater() {
         var animator = ObjectAnimator.ofFloat(star, View.ROTATION, -360f, 0f)
         animator.duration = 1000
-        
-        animator = ObjectAnimator . ofFloat (star, View.ROTATION, 0f, 3600f)
-        animator.duration = 1000
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?) {
-                rotateButton.isEnabled = false
-            }
 
-            override fun onAnimationEnd(animation: Animator?) {
-                rotateButton.isEnabled = true
-            }
-        })
+        animator = ObjectAnimator.ofFloat(star, View.ROTATION, 0f, 3600f)
+        animator.duration = 1000
+        animator.disableViewDuringAnimation(rotateButton)
+
         animator.start()
 
 
     }
 
     private fun translater() {
+        val animator = ObjectAnimator.ofFloat(star, View.TRANSLATION_X, 200f)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disableViewDuringAnimation(translateButton)
+
+        animator.start()
+
     }
 
+    // uses 2 scale(x,y) animation in the same time in parallel
     private fun scaler() {
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+
+        val animator = ObjectAnimator.ofPropertyValuesHolder(
+            star, scaleX, scaleY
+        )
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disableViewDuringAnimation(scaleButton)
+        animator.start()
     }
 
     private fun fader() {
+        val animator = ObjectAnimator.ofFloat(star, View.ALPHA, 0f)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disableViewDuringAnimation(fadeButton)
+
+        animator.start()
     }
 
     private fun colorizer() {
+        val animator = ObjectAnimator.ofArgb(
+            star.parent, "backgroundColor", Color.BLACK, Color.RED
+        )
+        animator.duration = 500
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disableViewDuringAnimation(fadeButton)
+
+        animator.start()
     }
 
     private fun shower() {
+    }
+
+
+    //    Extension function
+    //    This makes the function more concise to call, since it eliminates a parameter.
+    //    It also makes the code a little more natural to read,
+    //    by putting the animator-related functionality directly onto ObjectAnimator:
+    private fun ObjectAnimator.disableViewDuringAnimation(view: View) {
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.isEnabled = false
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                view.isEnabled = true
+            }
+        })
     }
 
 }
